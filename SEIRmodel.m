@@ -25,7 +25,7 @@ function [t,y] = SEIRmodel(N0, params)
 
 %%% specify time steps to record the solution
 tfinal = 730; %%% in days
-tspan = 0:1e-3:tfinal; 
+tspan = 0:1:tfinal; 
 
 %%% initial state vec
 yzero = zeros(6, 1);

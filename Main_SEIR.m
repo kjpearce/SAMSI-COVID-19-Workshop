@@ -11,18 +11,20 @@ N0 = 1;
 
 %%%% use parameter values from cited paper
 mu    = 0.0116/365;
-iota  = 3e-7;
+iota  = 1e-6;
 delta = 0.0116/365;
 beta  = 0.6;
-v     = 0.00197;
-ep    = 0.8;
+%v     = 0.00197;
+v = 0;
+ep = 0;
+%ep    = 0.8;
 sigma = 0.82;
 gamma = 0.31;
 kappa = 0.26;
-alpha = 0.602;
+alpha = 0.1;
 rho   = 0.2;
 eta   = 0.075;
-Tv    = 50;
+Tv    = 330;
 
 params = [mu; iota; delta; beta; v; ep; sigma; gamma; kappa; alpha; rho; eta; Tv];
 
