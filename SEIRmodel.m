@@ -1,41 +1,94 @@
-function [t,y] = SEIRmodel(N0, params)
+function [t,y] = SEIRmodel(X0, params)
+%%%  Function to compute numerical solution of ODE system
+%%%  Author: Kate Pearce
+
 %%%  Inputs: 
-%%%       N0: initial condition for
-%%%           state vector X = [S; V; E; A; I; H]
-%%%           S: susceptible individuals
-%%%           V: vaccinated individuals (not yet infected)
-%%%           E: exposed but not yet infectious
-%%%           A: asymptomatic infected
-%%%           I: symptomatic infected
-%%%           H: hospitalized (from symptomatic infected)
-%%%       params: model parameter values
-%%%           mu: birth rate [ppl/T]
-%%%           iota: importation rate of infected people [1/T]
-%%%           delta: baseline death rate [1/T]
+%%%       X0: initial condition for state vector X = [S; V; E; A; I; H]
+%%%       params: model parameters
+%%%           mu: birth rate
+%%%           iota: importation rate of infected people
+%%%           delta: baseline death rate 
 %%%           beta: transmission coeff = rate at which susceptible and infectious come into contact * probability of transmission [1/T * diml]
-%%%           v: vacc rate [1/T]
+%%%           v: vacc rate
 %%%           ep: vacc protection [diml]
 %%%           sigma: proportion of infected with symptoms [diml]
-%%%           gamma: rate of progression through infected stage [1/T]
+%%%           gamma: rate of progression through infected stage 
 %%%           kappa: probability of hospt. for sympt. infected [diml]
 %%%           alpha: relative infectiousness of asympt infected [diml]
-%%%           rho: rate of progression to infectiousness following infection [1/T]
-%%%           eta: rate of progression thru hospitalization [1/T]
+%%%           rho: rate of progression to infectiousness following infection 
+%%%           eta: rate of progression thru hospitalization
 %%%           Tv: day first vaccine administered
 
-%%% specify time steps to record the solution
-tfinal = 730; %%% in days
+%%% Outputs: 
+%%%       t: time vector 
+%%%       y: state vector 
+
+
+tfinal = 600; %%% Specify time steps to record the solution (in days)
 tspan = 0:1:tfinal; 
 
-%%% initial state vec
-yzero = zeros(6, 1);
-yzero(1) = N0;   
+options = odeset('AbsTol',1e-10, 'RelTol', 1e-8); 
 
-options = odeset('AbsTol',1e-10, 'RelTol', 1e-10);
-
-frhs = @(t, y)(SEIRrhs(t, y, params));
+frhs = @(t, y)(SEIRrhs(t, y, params));    %%% anonymous sub-function for ODE solver
  
-[t,y] = ode15s(frhs, tspan, yzero, options);
+[t,y] = ode15s(frhs, tspan, X0, options); %%% calls numerical solver
 
+%%% sub-function SEIRrhs: creates right hand side of ODE system
+    function yprime = SEIRrhs(t, y, params)
+
+        %%% model parameters
+        mu    = params(1);
+        iota  = params(2);
+        delta = params(3);
+        beta  = params(4);
+        v     = params(5);
+        ep    = params(6);
+        sigma = params(7);
+        gamma = params(8);
+        kappa = params(9);
+        alpha = params(10);
+        rho   = params(11);
+        eta   = params(12);
+        Tv    = params(13);
+
+        %%% states
+        S = y(1);
+        V = y(2);
+        E = y(3);
+        A = y(4);
+        I = y(5);
+        H = y(6);
+
+        if (t>=0)&&(t<=Tv)
+            nu = 0;
+            epsilon = 0;
+        elseif (t>Tv)
+            nu = v;
+            epsilon = ep;
+        end
+
+        yprime = zeros(6, 1);
+
+        %%% dS/dt
+        yprime(1) = mu - (delta + beta*(alpha*A + I + H) + iota + nu)*S; 
+
+        %%% dV/dt
+        yprime(2) = nu*S - (delta + beta*(alpha*A + I + H)*(1-epsilon))*V;
+
+        %%% dE/dt
+        yprime(3) = beta*(alpha*A + I + H)*S + beta*(1-epsilon)*(alpha*A + I + H)*V + iota*S - (delta + rho)*E;
+
+        %%% dA/dt
+        yprime(4) = (1-sigma)*rho*E - (delta + gamma)*A; 
+
+        %%% dI/dt
+        yprime(5) = sigma*rho*E - (delta + gamma)*I;
+
+        %%% dH/dt
+        yprime(6) = gamma*kappa*I - (delta + eta)*H;
+
+    end
+
+end
 
 
