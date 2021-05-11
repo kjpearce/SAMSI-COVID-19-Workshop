@@ -9,7 +9,7 @@
 %%%%%%%%%
 
 %%%%%%%%%
-%%%%%%%%% Baseline case: calibrated to NC hospitalizations starting from 
+%%%%%%%%% RUN FIRST: Baseline case calibrated to NC hospitalizations starting from 
 %%%%%%%%%                ~Sept 2020
 %%%%%%%%% 
 
@@ -31,7 +31,6 @@ X0 = [S0; V0; E0; A0; I0; H0];
 
 mu     = 0.0116/365;
 delta  = 0.0116/365;
-iota   = 3e-7;
 beta   = 0.686;
 sigma  = 0.82;
 gamma  = 0.29;
@@ -43,7 +42,7 @@ nu     = 0;
 ep     = 0;
 tau_nu = 0;
 
-params = [mu; iota; delta; beta; nu; ep; sigma; gamma; kappa; alpha; rho; eta; tau_nu];
+params = [mu; delta; beta; nu; ep; sigma; gamma; kappa; alpha; rho; eta; tau_nu];
 
 [t,y]  = SEIRmodel(X0, params); %%% numerical ODE solution
 
@@ -55,20 +54,20 @@ if ~exist(newSubFolder,'dir')
 end
 
 figure(1)
-plot(t, 10.49e6*y(:,2:6), 'LineWidth',3) %%% scale back to population size
+plot(t, 10.49e6*y(:,3:6), 'LineWidth',3) %%% scale back to population size
 set(gca,'FontSize',18)
 axis([0 400 0 0.006*10.49e6])
-legend('V','E','A','I','H')
+legend('E','A','I','H')
 xlabel('Days Elapsed since Mid-Pandemic Point')
 ylabel('Number of People')
 title('Baseline Case')
 saveas(gcf, [newSubFolder '/Baseline_1.png'])
 
 figure(2)
-plot(t, 10.49e6*y(:,2:6), 'LineWidth',3)
+plot(t, 10.49e6*y(:,3:6), 'LineWidth',3)
 set(gca,'FontSize',18)
 axis([0 400 0 0.0035*10.49e6])
-legend('V','E','A','I','H')
+legend('E','A','I','H')
 xlabel('Days Elapsed since Mid-Pandemic Point')
 ylabel('Number of People')
 title('Baseline Case: Zoomed In')

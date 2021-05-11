@@ -38,18 +38,17 @@ frhs = @(t, y)(SEIRrhs(t, y, params));    %%% anonymous sub-function for ODE sol
 
         %%% model parameters
         mu    = params(1);
-        iota  = params(2);
-        delta = params(3);
-        beta  = params(4);
-        v     = params(5);
-        ep    = params(6);
-        sigma = params(7);
-        gamma = params(8);
-        kappa = params(9);
-        alpha = params(10);
-        rho   = params(11);
-        eta   = params(12);
-        Tv    = params(13);
+        delta = params(2);
+        beta  = params(3);
+        v     = params(4);
+        ep    = params(5);
+        sigma = params(6);
+        gamma = params(7);
+        kappa = params(8);
+        alpha = params(9);
+        rho   = params(10);
+        eta   = params(11);
+        Tv    = params(12);
 
         %%% states
         S = y(1);
@@ -70,13 +69,13 @@ frhs = @(t, y)(SEIRrhs(t, y, params));    %%% anonymous sub-function for ODE sol
         yprime = zeros(6, 1);
 
         %%% dS/dt
-        yprime(1) = mu - (delta + beta*(alpha*A + I + H) + iota + nu)*S; 
+        yprime(1) = mu - (delta + beta*(alpha*A + I + H) + nu)*S; 
 
         %%% dV/dt
         yprime(2) = nu*S - (delta + beta*(alpha*A + I + H)*(1-epsilon))*V;
 
         %%% dE/dt
-        yprime(3) = beta*(alpha*A + I + H)*S + beta*(1-epsilon)*(alpha*A + I + H)*V + iota*S - (delta + rho)*E;
+        yprime(3) = beta*(alpha*A + I + H)*S + beta*(1-epsilon)*(alpha*A + I + H)*V - (delta + rho)*E;
 
         %%% dA/dt
         yprime(4) = (1-sigma)*rho*E - (delta + gamma)*A; 
